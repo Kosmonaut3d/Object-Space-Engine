@@ -87,14 +87,16 @@ namespace EngineTest.Main
                 angleX: 0,
                 angleY: 0,
                 angleZ: 0,
-                scale: 4);
+                scale: new Vector3(4,4,4));
 
-            //AddEntity(model: _assets.Truck, materialEffect: _assets.TruckMaterial,
-            //    position: new Vector3(0, 6, 0),
-            //    angleX: 0,
-            //    angleY: 0,
-            //    angleZ: 0,
-            //    scale: 4);
+            
+
+            AddEntity(model: _assets.Truck, materialEffect: _assets.TruckMaterial2,
+                position: new Vector3(0, 0, 0),
+                angleX: 0,
+                angleY: 0,
+                angleZ: 0,
+                scale: new Vector3(4,4,-4));
 
             //AddEntity(model: _assets.Truck, materialEffect: _assets.TruckMaterial,
             //    position: new Vector3(0, 12, 0),
@@ -353,7 +355,7 @@ namespace EngineTest.Main
         /// <param name="PhysicsEntity">attached physical object</param>
         /// <param name="hasStaticPhysics">if "true" a static mesh will be computed based on the model mesh. Other physical objects can collide with the entity</param>
         /// <returns>returns the basicEntity we created</returns>
-        private BasicEntity AddEntity(Model model, Vector3 position, double angleX, double angleY, double angleZ, float scale, Entity PhysicsEntity = null, bool hasStaticPhysics = false)
+        private BasicEntity AddEntity(Model model, Vector3 position, double angleX, double angleY, double angleZ, Vector3 scale, Entity PhysicsEntity = null, bool hasStaticPhysics = false)
         {
             BasicEntity entity = new BasicEntity(model,
                 null, 
@@ -384,7 +386,7 @@ namespace EngineTest.Main
         /// <param name="PhysicsEntity">attached physical object</param>
         /// <param name="hasStaticPhysics">if "true" a static mesh will be computed based on the model mesh. Other physical objects can collide with the entity</param>
         /// <returns>returns the basicEntity we created</returns>
-        private BasicEntity AddEntity(Model model, MaterialEffect materialEffect, Vector3 position, double angleX, double angleY, double angleZ, float scale, Entity PhysicsEntity = null, bool hasStaticPhysics = false )
+        private BasicEntity AddEntity(Model model, MaterialEffect materialEffect, Vector3 position, double angleX, double angleY, double angleZ, Vector3 scale, Entity PhysicsEntity = null, bool hasStaticPhysics = false )
         {
             BasicEntity entity = new BasicEntity(model,
                 materialEffect,
@@ -413,9 +415,9 @@ namespace EngineTest.Main
             ModelDataExtractor.GetVerticesAndIndicesFromModel(entity.Model, out vertices, out indices);
             var mesh = new StaticMesh(vertices, indices, 
                 new AffineTransform(
-                    new BEPUutilities.Vector3(entity.Scale, 
-                        entity.Scale, 
-                        entity.Scale), 
+                    new BEPUutilities.Vector3(entity.Scale.X, 
+                        entity.Scale.Y, 
+                        entity.Scale.Z), 
                 Quaternion.CreateFromRotationMatrix(MathConverter.Convert(entity.RotationMatrix)), 
                 MathConverter.Convert(entity.Position)));
 

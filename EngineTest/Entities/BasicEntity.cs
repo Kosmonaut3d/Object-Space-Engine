@@ -104,9 +104,9 @@ namespace EngineTest.Entities
         public Matrix RotationMatrix;
         private Matrix _worldOldMatrix = Matrix.Identity;
         private Matrix _worldNewMatrix = Matrix.Identity;
-        public readonly float Scale = 1;
+        public readonly Vector3 Scale = Vector3.One;
         
-        public BasicEntity(Model model, MaterialEffect material, Vector3 position, double angleZ, double angleX, double angleY, float scale, MeshMaterialLibrary library = null, Entity physicsObject = null)
+        public BasicEntity(Model model, MaterialEffect material, Vector3 position, double angleZ, double angleX, double angleY, Vector3 scale, MeshMaterialLibrary library = null, Entity physicsObject = null)
         {
             Id = IdGenerator.GetNewId();
             WorldTransform = new TransformMatrix(Matrix.Identity, Id);
@@ -162,7 +162,7 @@ namespace EngineTest.Entities
                 if (StaticPhysicsObject != null)
                 {
                     AffineTransform change = new AffineTransform(
-                            new BEPUutilities.Vector3(Scale, Scale, Scale),
+                            new BEPUutilities.Vector3(Scale.X, Scale.Y, Scale.Z),
                             Quaternion.CreateFromRotationMatrix(MathConverter.Convert(RotationMatrix)),
                             MathConverter.Convert(Position));
 
@@ -218,7 +218,7 @@ namespace EngineTest.Entities
         public bool HasChanged = true;
         public readonly int Id;
 
-        public float Scale;
+        public Vector3 Scale;
 
         public TransformMatrix(Matrix world, int id)
         {

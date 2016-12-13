@@ -13,6 +13,7 @@ namespace EngineTest.Recources
         public Model Truck;
 
         public MaterialEffect TruckMaterial;
+        public MaterialEffect TruckMaterial2;
         public MaterialEffect GoldMaterial;
         public Texture2D EnvironmentMap;
         public bool IconLight { get; set; }
@@ -31,6 +32,13 @@ namespace EngineTest.Recources
                 roughnessMap: content.Load<Texture2D>("Art/truck_skeleton_roughness"),
                 metallicMap: content.Load<Texture2D>("Art/truck_skeleton_metallic")
                 );
+            TruckMaterial2 = CreateMaterial(Color.Wheat, 0.1f, 0.1f,
+                albedoMap: content.Load<Texture2D>("Art/truck_skeleton_albedo"),
+                normalMap: content.Load<Texture2D>("Art/truck_skeleton_normal"),
+                roughnessMap: content.Load<Texture2D>("Art/truck_skeleton_roughness"),
+                metallicMap: content.Load<Texture2D>("Art/truck_skeleton_metallic")
+                );
+            TruckMaterial2.RenderCClockwise = true;
 
             GoldMaterial = CreateMaterial(Color.Gold, 0.2f, 1);
         }

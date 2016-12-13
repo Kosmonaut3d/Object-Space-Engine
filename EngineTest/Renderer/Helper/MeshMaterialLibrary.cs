@@ -772,7 +772,7 @@ namespace EngineTest.Renderer.Helper
                 if (trafoMatrix.HasChanged || cameraHasChanged)
                 {
                     sphere.Center = _worldBoundingCenters[i];
-                    sphere.Radius = MeshBoundingSphere.Radius * trafoMatrix.Scale;
+                    sphere.Radius = MeshBoundingSphere.Radius * trafoMatrix.Scale.X;
                     if (viewFrustum.Contains(sphere) == ContainmentType.Disjoint)
                     {
                         Rendered[i] = false;
