@@ -69,7 +69,7 @@ namespace EngineTest.Renderer.Helper
         {
             if (!GameSettings.h_DrawLines) return;
 
-            Shaders.LineEffectParameter_WorldViewProj.SetValue(viewProjection);
+            //Shaders.LineEffectParameter_WorldViewProj.SetValue(viewProjection);
 
 
         //    _vbuffer = new VertexBuffer(graphicsDevice, typeof(VertexPositionColor), Lines.Count*2, BufferUsage.WriteOnly);

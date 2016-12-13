@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.Entities;
@@ -79,29 +80,28 @@ namespace EngineTest.Main
             // Static geometry
 
             // NOTE: If you don't pass a materialEffect it will use the default material from the object
+            
 
-            AddEntity(model: _assets.SponzaModel,
-                position: Vector3.Zero,
-                angleX: Math.PI / 2,
-                angleY: 0,
-                angleZ: 0,
-                scale: 0.1f,
-                hasStaticPhysics: true);
-
-            //AddEntity(model: _assets.CloneTrooper,
-            //    position: new Vector3(20, 0, 10),
-            //    angleX: Math.PI / 2,
-            //    angleY: 0,
-            //    angleZ: 0,
-            //    scale: 10.4f);
-
-            AddEntity(model: _assets.Plane,
-                materialEffect: _assets.MetalRough01Material,
+            AddEntity(model: _assets.Truck, materialEffect: _assets.TruckMaterial,
                 position: new Vector3(0, 0, 0),
                 angleX: 0,
                 angleY: 0,
                 angleZ: 0,
-                scale: 30);
+                scale: 4);
+
+            //AddEntity(model: _assets.Truck, materialEffect: _assets.TruckMaterial,
+            //    position: new Vector3(0, 6, 0),
+            //    angleX: 0,
+            //    angleY: 0,
+            //    angleZ: 0,
+            //    scale: 4);
+
+            //AddEntity(model: _assets.Truck, materialEffect: _assets.TruckMaterial,
+            //    position: new Vector3(0, 12, 0),
+            //    angleX: 0,
+            //    angleY: 0,
+            //    angleZ: 0,
+            //    scale: 4);
 
             //AddEntity(model: _assets.StanfordDragon, 
             //    materialEffect: _assets.GoldMaterial, 
@@ -170,37 +170,18 @@ namespace EngineTest.Main
             //Just a ground box where nothing should fall through
             //_physicsSpace.Add(new Box(new BEPUutilities.Vector3(0, 0, -0.5f), 1000, 1000, 1));
 
-            _physicsSpace.Add(physicsEntity = new Box(pos: BEPUutilities.Vector3.Zero, width: 10, height: 10, length: 10, mass: 100));
-            AddEntity(model: _assets.TestCube, 
-                materialEffect: _assets.SilverMaterial, 
-                position: new Vector3(20.2f, 1.1f, 40), 
-                angleX: Math.PI / 2, 
-                angleY: 0, 
-                angleZ: 0, 
-                scale: 5, 
-                PhysicsEntity: physicsEntity);
-
-            _physicsSpace.Add(physicsEntity = new Sphere(position: BEPUutilities.Vector3.Zero, radius: 5, mass: 50));
-            AddEntity(model: _assets.IsoSphere, 
-                materialEffect: _assets.BaseMaterial, 
-                position: new Vector3(20, 0, 10), 
-                angleX: Math.PI / 2, 
-                angleY: 0, 
-                angleZ: 0, 
-                scale: 5, 
-                PhysicsEntity: physicsEntity);
-
+            
             ////////////////////////////////////////////////////////////////////////
             // Dynamic lights
 
-            //AddPointLight(position: new Vector3(-20, 0, 40), 
-            //    radius: 120, 
-            //    color: Color.White, 
-            //    intensity: 20, 
-            //    castShadows: true, 
-            //    shadowResolution: 1024, 
-            //    staticShadow: false, 
-            //    isVolumetric: false);
+            AddPointLight(position: new Vector3(-20, 0, 40),
+                radius: 120,
+                color: Color.White,
+                intensity: 20,
+                castShadows: true,
+                shadowResolution: 1024,
+                staticShadow: false,
+                isVolumetric: false);
 
             ////volumetric light!
             //AddPointLight(position: new Vector3(-4, 40, 33),
@@ -216,19 +197,19 @@ namespace EngineTest.Main
 
             // Spawn a lot of lights to test performance 
 
-            int sides = 4;
-            float distance = 20;
-            Vector3 startPosition = new Vector3(-30, 30, 1);
+            //int sides = 4;
+            //float distance = 20;
+            //Vector3 startPosition = new Vector3(-30, 30, 1);
 
-            //amount of lights is sides*sides* sides*2
+            ////amount of lights is sides*sides* sides*2
 
-            for (int x = 0; x < sides * 2; x++)
-                for (int y = 0; y < sides; y++)
-                    for (int z = 0; z < sides; z++)
-                    {
-                        Vector3 position = new Vector3(x, -y, z) * distance + startPosition;
-                        AddPointLight(position, distance, FastRand.NextColor(), 50, false, false, 0.9f);
-                    }
+            //for (int x = 0; x < sides * 2; x++)
+            //    for (int y = 0; y < sides; y++)
+            //        for (int z = 0; z < sides; z++)
+            //        {
+            //            Vector3 position = new Vector3(x, -y, z) * distance + startPosition;
+            //            AddPointLight(position, distance, FastRand.NextColor(), 50, false, false, 0.9f);
+            //        }
 
 
             // NOT WORKING RIGHT NOW
@@ -270,11 +251,6 @@ namespace EngineTest.Main
             if (DebugScreen.ConsoleOpen) return;
 
             //Starts the "editor mode" where we can manipulate objects
-            if (Input.WasKeyPressed(Keys.Space))
-            {
-                GameSettings.Editor_enable = !GameSettings.Editor_enable;
-            }
-
             //Spawns a new light on the ground
             if (Input.keyboardState.IsKeyDown(Keys.L))
             {
@@ -294,42 +270,6 @@ namespace EngineTest.Main
 
                 switch (_renderModeCycle)
                 {
-                    case 0:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.Deferred;
-                        break;
-                    case 1:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.Albedo;
-                        break;
-                    case 2:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.Normal;
-                        break;
-                    case 3:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.Depth;
-                        break;
-                    case 4:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.Diffuse;
-                        break;
-                    case 5:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.Specular;
-                        break;
-                    case 6:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.Volumetric;
-                        break;
-                    case 7:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.SSAO;
-                        break;
-                    case 8:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.Hologram;
-                        break;
-                    case 9:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.Emissive;
-                        break;
-                    case 10:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.DirectionalShadow;
-                        break;
-                    case 11:
-                        GameSettings.g_RenderMode = Renderer.Renderer.RenderModes.SSR;
-                        break;
 
                 }
             }

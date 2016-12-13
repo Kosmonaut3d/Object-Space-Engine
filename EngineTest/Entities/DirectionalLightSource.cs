@@ -163,32 +163,6 @@ namespace EngineTest.Entities
         {
             get { return new DirectionalLightSource(Color, Intensity, Direction, Position, DrawShadows, ShadowSize, ShadowDepth, ShadowResolution, ShadowFiltering, false, _staticShadow); }
         }
-
-        public void ApplyShader()
-        {
-            if (DrawShadows)
-            {
-                //Shaders.deferredDirectionalLightParameterLightViewProjection.SetValue(LightViewProjection);
-                //Shaders.deferredDirectionalLightParameter_ShadowMap.SetValue(shadowMap);
-                if (ScreenSpaceShadowBlur)
-                {
-                    Shaders.deferredDirectionalLightParameterLightViewProjection.SetValue(LightViewProjection);
-                    Shaders.deferredDirectionalLightParameter_ShadowFiltering.SetValue((int)ShadowFiltering);
-                    Shaders.deferredDirectionalLightSSShadowed.Passes[0].Apply();  
-                }
-                else
-                {
-                    Shaders.deferredDirectionalLightParameterLightViewProjection.SetValue(LightViewProjection);
-                    Shaders.deferredDirectionalLightParameter_ShadowMap.SetValue(ShadowMap);
-                    Shaders.deferredDirectionalLightParameter_ShadowFiltering.SetValue((int)ShadowFiltering);
-                    Shaders.deferredDirectionalLightParameter_ShadowMapSize.SetValue((float)ShadowResolution);
-                    Shaders.deferredDirectionalLightShadowed.Passes[0].Apply();   
-                }
-            }
-            else
-            {
-                Shaders.deferredDirectionalLightUnshadowed.Passes[0].Apply();  
-            }
-        }
+        
     }
 }

@@ -51,6 +51,10 @@ namespace EngineTest
             _graphics.PreferredBackBufferWidth = GameSettings.g_ScreenWidth;
             _graphics.PreferredBackBufferHeight = GameSettings.g_ScreenHeight;
 
+            _graphics.PreferMultiSampling = true;
+            _graphics.PreferredBackBufferFormat = SurfaceFormat.Color;
+
+            _graphics.PreferredDepthStencilFormat = DepthFormat.Depth24;
             //HiDef enables usable shaders
             _graphics.GraphicsProfile = GraphicsProfile.HiDef;
 
@@ -113,6 +117,8 @@ namespace EngineTest
             // TODO: Add your initialization logic here
             _screenManager.Initialize(GraphicsDevice, _physicsSpace);
 
+            GraphicsDevice.PresentationParameters.MultiSampleCount = 4;
+
             base.Initialize();
         }
 
@@ -147,7 +153,7 @@ namespace EngineTest
             _screenManager.Update(gameTime, _isActive);
 
             //BEPU Physics
-            if(!GameSettings.Editor_enable && GameSettings.p_Physics)
+            if(GameSettings.p_Physics)
                 _physicsSpace.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             //base.Update(gameTime);

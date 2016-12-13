@@ -21,20 +21,6 @@ namespace EngineTest.Entities
             Direction = direction;
             DrawShadow = drawShadow;
         }
-
-        public override void ApplyShader(Matrix InverseView)
-        {
-            throw new NotImplementedException();
-
-            //if (RenderTargetShadowMap != null)
-            //{
-            //    Shaders.deferredSpotLightParameterShadowMap.SetValue(RenderTargetShadowMap);
-            //    Shaders.deferredSpotLightShadowed.Passes[0].Apply();
-            //}
-            //else
-            //{
-            //    Shaders.deferredSpotLightUnshadowed.Passes[0].Apply();
-            //}
-        }
+        
     }
 }

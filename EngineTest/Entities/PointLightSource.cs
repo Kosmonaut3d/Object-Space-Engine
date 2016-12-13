@@ -34,7 +34,7 @@ namespace EngineTest.Entities
         public BoundingSphere BoundingSphere;
 
         public bool DrawShadow;
-        private readonly bool _isVolumetric;
+        public readonly bool IsVolumetric;
         private readonly float _lightVolumeDensity = 1;
 
 
@@ -59,7 +59,7 @@ namespace EngineTest.Entities
             Color = color;
             Intensity = intensity;
             DrawShadow = drawShadow;
-            _isVolumetric = isVolumetric;
+            IsVolumetric = isVolumetric;
 
             ShadowResolution = shadowResolution;
             StaticShadows = staticShadow;
@@ -110,52 +110,14 @@ namespace EngineTest.Entities
 
         public override TransformableObject Clone
         {
-            get { return new PointLightSource(Position, Radius, Color, Intensity, DrawShadow, _isVolumetric, ShadowResolution, StaticShadows);}
+            get { return new PointLightSource(Position, Radius, Color, Intensity, DrawShadow, IsVolumetric, ShadowResolution, StaticShadows);}
         }
         
         protected PointLightSource()
         {
 
         }
-
-        public virtual void ApplyShader(Matrix inverseView)
-        {
-            if (shadowMapCube != null)
-            {
-                Shaders.deferredPointLightParameterShadowMap.SetValue(shadowMapCube);
-
-                Shaders.deferredPointLightParameterLightViewProjectionPositiveX.SetValue(inverseView * LightViewProjectionPositiveX);
-                Shaders.deferredPointLightParameterLightViewProjectionNegativeX.SetValue(inverseView * LightViewProjectionNegativeX);
-
-                Shaders.deferredPointLightParameterLightViewProjectionPositiveY.SetValue(inverseView * LightViewProjectionPositiveY);
-                Shaders.deferredPointLightParameterLightViewProjectionNegativeY.SetValue(inverseView * LightViewProjectionNegativeY);
-
-                Shaders.deferredPointLightParameterLightViewProjectionPositiveZ.SetValue(inverseView * LightViewProjectionPositiveZ);
-                Shaders.deferredPointLightParameterLightViewProjectionNegativeZ.SetValue(inverseView * LightViewProjectionNegativeZ);
-
-                if (_isVolumetric && GameSettings.g_VolumetricLights)
-                {
-                    Shaders.deferredPointLightParameter_LightVolumeDensity.SetValue(_lightVolumeDensity);
-                    Shaders.deferredPointLightShadowedVolumetric.Passes[0].Apply();
-                }
-                else
-                {
-                    Shaders.deferredPointLightShadowed.Passes[0].Apply();
-                }
-            }
-            else
-            {
-                if (_isVolumetric && GameSettings.g_VolumetricLights)
-                {
-                    Shaders.deferredPointLightParameter_LightVolumeDensity.SetValue(_lightVolumeDensity);
-                    Shaders.deferredPointLightUnshadowedVolumetric.Passes[0].Apply();
-                }
-                else
-                {
-                    Shaders.deferredPointLightUnshadowed.Passes[0].Apply();
-                }
-            }
-        }
+        
     }
     
 }

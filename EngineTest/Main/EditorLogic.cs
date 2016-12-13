@@ -55,8 +55,6 @@ namespace EngineTest.Main
         /// <param name="data"></param>
         public void Update(GameTime gameTime, List<BasicEntity> entities, List<PointLightSource> pointLights, List<DirectionalLightSource> dirLights, EditorReceivedData data, MeshMaterialLibrary meshMaterialLibrary)
         {
-            if (!GameSettings.Editor_enable) return;
-
             if(Input.WasKeyPressed(Keys.R)) _gizmoMode = GizmoModes.Rotation;
             if (Input.WasKeyPressed(Keys.T)) _gizmoMode = GizmoModes.Translation;
 

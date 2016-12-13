@@ -159,7 +159,7 @@ namespace EngineTest.Entities
                 WorldTransform.Scale = Scale;
                 WorldTransform.World = _worldOldMatrix;
                 
-                if (StaticPhysicsObject != null && !GameSettings.Editor_enable)
+                if (StaticPhysicsObject != null)
                 {
                     AffineTransform change = new AffineTransform(
                             new BEPUutilities.Vector3(Scale, Scale, Scale),
@@ -200,22 +200,10 @@ namespace EngineTest.Entities
             }
             else
             {
-                if (Position != _worldNewMatrix.Translation && GameSettings.Editor_enable)
-                {
-                    //DynamicPhysicsObject.Position = new BEPUutilities.Vector3(Position.X, Position.Y, Position.Z);
-                    _dynamicPhysicsObject.Position = MathConverter.Convert(Position);
-                }
-                //    DynamicPhysicsObject.Position = new BEPUutilities.Vector3(Position.X, Position.Y, Position.Z);
-                //    //WorldNewMatrix = Extensions.CopyFromBepuMatrix(WorldNewMatrix, DynamicPhysicsObject.WorldTransform);
-                //    //if (Position != WorldNewMatrix.Translation)
-                //    //{
-                //    //    var i = 0;
-                //    //}
-
-                //}
-                //else
+                //if (Position != _worldNewMatrix.Translation)
                 //{
-                //    //Position = WorldOldMatrix.Translation;
+                //    //DynamicPhysicsObject.Position = new BEPUutilities.Vector3(Position.X, Position.Y, Position.Z);
+                //    _dynamicPhysicsObject.Position = MathConverter.Convert(Position);
                 //}
             }
 
