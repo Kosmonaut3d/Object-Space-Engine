@@ -597,6 +597,7 @@ namespace EngineTest.Renderer.Helper
                         if (material.RenderCClockwise)
                             graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
 
+                        //only once
                         if (renderType == RenderType.TextureBuffer) return;
 
                     }

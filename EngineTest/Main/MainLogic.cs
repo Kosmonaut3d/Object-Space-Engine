@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUutilities;
 using EngineTest.Entities;
+using EngineTest.Gearset;
 using EngineTest.Recources;
 using EngineTest.Recources.Helper;
 using EngineTest.Renderer.Helper;
@@ -42,6 +44,9 @@ namespace EngineTest.Main
         private int _renderModeCycle;
         private Space _physicsSpace;
 
+        private BasicEntity truck1;
+        private BasicEntity truck2;
+
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +79,7 @@ namespace EngineTest.Main
             // NOTE: Coordinate system depends on Camera.up,
             //       Right now z is going up, it's not depth!
 
-            Camera = new Camera(position: new Vector3(-80, 0, 20), lookat: new Vector3(1, 1, 15));
+            Camera = new Camera(position: new Vector3(-15.8121f, -9.81587f, 8.614f), lookat: new Vector3(-14.8989f,-9.3444f,8.1324f));
 
             ////////////////////////////////////////////////////////////////////////
             // Static geometry
@@ -82,7 +87,7 @@ namespace EngineTest.Main
             // NOTE: If you don't pass a materialEffect it will use the default material from the object
             
 
-            AddEntity(model: _assets.Truck, materialEffect: _assets.TruckMaterial,
+            truck1 = AddEntity(model: _assets.Truck, materialEffect: _assets.TruckMaterial,
                 position: new Vector3(0, 0, 0),
                 angleX: 0,
                 angleY: 0,
@@ -91,7 +96,7 @@ namespace EngineTest.Main
 
             
 
-            AddEntity(model: _assets.Truck, materialEffect: _assets.TruckMaterial2,
+            truck2 = AddEntity(model: _assets.Truck, materialEffect: _assets.TruckMaterial2,
                 position: new Vector3(0, 0, 0),
                 angleX: 0,
                 angleY: 0,
@@ -236,10 +241,15 @@ namespace EngineTest.Main
         public void Update(GameTime gameTime, bool isActive)
         {
             if (!isActive) return;
-
+            
             //Upd
             Input.Update(gameTime, Camera);
 
+            if (GameSettings.s_rotateModel)
+            {
+                truck1.AngleZ += 0.5f*gameTime.ElapsedGameTime.TotalSeconds;
+                truck2.AngleZ += 0.5f*gameTime.ElapsedGameTime.TotalSeconds;
+            }
             //Make the lights move up and down
             //for (var i = 2; i < PointLights.Count; i++)
             //{

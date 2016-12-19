@@ -217,11 +217,15 @@ namespace EngineTest.Main
 
         public void Draw(GameTime gameTime)
         {
+            _fps = 0.9 * _fps + 0.1 * (1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
+
+            _smoothfps = 0.98 * _smoothfps + 0.02 * _fps;
+
+            GameStats.fps_avg = _smoothfps;
+
             if (GameSettings.ShowDisplayInfo > 0 || ConsoleOpen)
             {
-                _fps = 0.9 * _fps + 0.1 * (1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
-
-                _smoothfps = 0.98 * _smoothfps + 0.02 * _fps;
+                
                 if (gameTime.TotalGameTime.TotalMilliseconds - _frame > 500)
                 {
                     _smoothfpsShow = _smoothfps;

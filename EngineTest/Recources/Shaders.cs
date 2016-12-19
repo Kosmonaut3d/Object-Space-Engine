@@ -83,6 +83,7 @@ namespace EngineTest.Recources
         public static EffectParameter GBufferEffectParameter_Material_RoughnessMap;
         public static EffectParameter GBufferEffectParameter_Material_MaterialType;
         public static EffectParameter GBufferEffectParameter_Material_EnvironmentMap;
+        public static EffectParameter GBufferEffectParameter_EnvironmentIntensity;
 
         public static EffectTechnique GBufferEffectTechniques_DrawTextureDisplacement;
         public static EffectTechnique GBufferEffectTechniques_DrawTextureSpecularNormalMask;
@@ -97,6 +98,13 @@ namespace EngineTest.Recources
         public static EffectTechnique GBufferEffectTechniques_DrawTexture;
         public static EffectTechnique GBufferEffectTechniques_DrawBasic;
         public static EffectTechnique GBufferEffectTechniques_DrawBasicMesh;
+
+        //SEAMFIX
+
+        public static Effect SeamFixEffect;
+        public static EffectParameter SeamFixBaseTexture;
+        public static EffectParameter SeamFixInverseResolution;
+        public static EffectParameter SeamFixSteps;
         //COMPOSE
 
         //SHADOW MAPPING
@@ -105,9 +113,15 @@ namespace EngineTest.Recources
         public static EffectParameter virtualShadowMappingEffectParameter_WorldViewProj;
         public static EffectTechnique virtualShadowMappingEffect_Technique_Depth;
         public static EffectTechnique virtualShadowMappingEffect_Technique_VSM;
-        
+
         public static void Load(ContentManager content)
         {
+            //SeamFix
+            SeamFixEffect = content.Load<Effect>("Shaders/ObjectSpaceRender/SeamFix");
+            SeamFixBaseTexture = SeamFixEffect.Parameters["BaseTexture"];
+            SeamFixInverseResolution = SeamFixEffect.Parameters["InverseResolution"];
+            SeamFixSteps = SeamFixEffect.Parameters["Steps"];
+
             //Gbuffer
             GBufferEffect = content.Load<Effect>("Shaders/ObjectSpaceRender/OSRenderer");
 
@@ -130,6 +144,8 @@ namespace EngineTest.Recources
             GBufferEffectParameter_Material_EnvironmentMap = GBufferEffect.Parameters["EnvironmentMap"];
 
             GBufferEffectParameter_Material_MaterialType = GBufferEffect.Parameters["MaterialType"];
+
+            GBufferEffectParameter_EnvironmentIntensity = GBufferEffect.Parameters["EnvironmentIntensity"];
 
             ClearGBufferEffect = content.Load<Effect>("Shaders/GbufferSetup/ClearGBuffer");
 

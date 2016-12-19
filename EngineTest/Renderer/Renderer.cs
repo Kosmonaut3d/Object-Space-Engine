@@ -1,8 +1,10 @@
-﻿using System;
+﻿#undef USE_GEARSET
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using EngineTest.Entities;
+using EngineTest.Gearset;
 using EngineTest.Main;
 using EngineTest.Recources;
 using EngineTest.Recources.Helper;
@@ -46,9 +48,7 @@ namespace EngineTest.Renderer
         private Matrix _inverseViewProjection;
         private Matrix _previousViewProjection;
         private Matrix _currentViewToPreviousViewProjection;
-
-        private bool _continous = true;
-
+        
         //Bounding Frusta of our view projection, to calculate which objects are inside the view
         private BoundingFrustum _boundingFrustum;
         private BoundingFrustum _boundingFrustumShadow;
@@ -60,7 +60,7 @@ namespace EngineTest.Renderer
 
         //Checkvariables to see which console variables have changed from the frame before
         private float _g_FarClip;
-        private float _supersampling = 1;
+        private int _texResolution = 1;
         private bool _hologramDraw;
         private int _forceShadowFiltering;
         private bool _forceShadowSS;
@@ -74,6 +74,7 @@ namespace EngineTest.Renderer
 
         //Render targets
         private RenderTarget2D _textureBuffer;
+        private RenderTarget2D _textureBufferSeamFix;
         //Performance Profiler
 
         private readonly Stopwatch _performanceTimer = new Stopwatch();
@@ -122,7 +123,6 @@ namespace EngineTest.Renderer
             
             SetUpRenderTargets(GameSettings.g_ScreenWidth, GameSettings.g_ScreenHeight, false);
 
-            
         }
 
         /// <summary>
@@ -174,16 +174,18 @@ namespace EngineTest.Renderer
 
             //Update our view projection matrices if the camera moved
             UpdateViewProjection(camera, meshMaterialLibrary, entities);
-
-            if (Input.WasKeyPressed(Keys.V))
-            {
-                _continous = !_continous;
-            }
+            
+            GS.BeginMark("DrawTextureBuffer", Color.Red);
             //Draw our meshes to the G Buffer
             DrawTextureBuffer(meshMaterialLibrary);
-
-            DrawObjects(meshMaterialLibrary);
             
+            GS.EndMark("DrawTextureBuffer");
+
+            FixSeams();
+
+            GS.BeginMark("DrawMeshes", Color.Blue);
+            DrawObjects(meshMaterialLibrary);
+            GS.EndMark("DrawMeshes");
             //Draw the final rendered image, change the output based on user input to show individual buffers/rendertargets
             RenderMode();
             
@@ -193,7 +195,9 @@ namespace EngineTest.Renderer
             //Set up the frustum culling for the next frame
             meshMaterialLibrary.FrustumCullingFinalizeFrame(entities);
         }
-                #endregion
+
+
+        #endregion
 
                 #region OBJECT SPACE RENDERING FUNCTIONS
                 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -237,9 +241,9 @@ namespace EngineTest.Renderer
             }
             
             //Check if supersampling has changed
-            if (Math.Abs(_supersampling - GameSettings.g_supersampling) > 0.0001f)
+            if (_texResolution != GameSettings.g_texResolution)
             {
-                _supersampling = GameSettings.g_supersampling;
+                _texResolution = GameSettings.g_texResolution;
                 SetUpRenderTargets(GameSettings.g_ScreenWidth, GameSettings.g_ScreenHeight, false);
             }
             
@@ -292,6 +296,9 @@ namespace EngineTest.Renderer
 
                 if (_boundingFrustum == null) _boundingFrustum = new BoundingFrustum(_staticViewProjection);
                 else _boundingFrustum.Matrix = _staticViewProjection;
+
+                Matrix id = Matrix.Identity;
+
                 
             }
 
@@ -314,7 +321,7 @@ namespace EngineTest.Renderer
         /// <param name="meshMaterialLibrary"></param>
         private void DrawTextureBuffer(MeshMaterialLibrary meshMaterialLibrary)
         {
-            if (!Input.WasKeyPressed(Keys.C) && !_continous) return;
+            if (!Input.WasKeyPressed(Keys.C) && !GameSettings.g_UpdateShading) return;
 
             _graphicsDevice.SetRenderTarget(_textureBuffer);
             _graphicsDevice.Clear(Color.TransparentBlack);
@@ -331,16 +338,27 @@ namespace EngineTest.Renderer
                 _performancePreviousTime = performanceCurrentTime;
             }
         }
+        private void FixSeams()
+        {
+            if (!GameSettings.g_FixSeams) return;
+
+            _graphicsDevice.SetRenderTarget(_textureBufferSeamFix);
+
+            Shaders.SeamFixEffect.CurrentTechnique.Passes[0].Apply();
+
+            _quadRenderer.RenderQuad(_graphicsDevice, -Vector2.One, Vector2.One);
+
+        }
 
         private void DrawObjects(MeshMaterialLibrary meshMaterialLibrary)
         {
             _graphicsDevice.SetRenderTarget(null);
-            _graphicsDevice.Clear(_continous ? Color.CadetBlue : Color.DarkViolet);
+            _graphicsDevice.Clear(GameSettings.g_UpdateShading ? Color.CadetBlue : Color.DarkViolet);
             _graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            Shaders.GBufferEffectParameter_Material_Texture.SetValue(_textureBuffer);
+            Shaders.GBufferEffectParameter_Material_Texture.SetValue(GameSettings.g_FixSeams ? _textureBufferSeamFix : _textureBuffer);
             meshMaterialLibrary.Draw(renderType: MeshMaterialLibrary.RenderType.FinalMesh, graphicsDevice: _graphicsDevice, viewProjection: _viewProjection, lightViewPointChanged: true, view: _view);
-
+            
             //Performance Profiler
             if (GameSettings.d_profiler)
             {
@@ -350,6 +368,7 @@ namespace EngineTest.Renderer
                 _performancePreviousTime = performanceCurrentTime;
             }
         }
+        
 
         /// <summary>
         /// Draw the final rendered image, change the output based on user input to show individual buffers/rendertargets
@@ -362,7 +381,7 @@ namespace EngineTest.Renderer
 
             //}
 
-            DrawMapToScreenToFullScreen(_textureBuffer, null, 0.4f);
+            DrawMapToScreenToFullScreen(GameSettings.g_FixSeams ? _textureBufferSeamFix : _textureBuffer, null, 0.4f);
 
             //Performance Profiler
             if (GameSettings.d_profiler)
@@ -394,7 +413,20 @@ namespace EngineTest.Renderer
 
         private void SetUpRenderTargets(int width, int height, bool onlyEssentials)
         {
-            _textureBuffer = new RenderTarget2D(_graphicsDevice, 512,512, true, SurfaceFormat.Color, DepthFormat.None);
+            if (GameSettings.g_FixSeams)
+            {
+                _textureBuffer = new RenderTarget2D(_graphicsDevice, GameSettings.g_texResolution,
+                    GameSettings.g_texResolution, false, SurfaceFormat.Color, DepthFormat.None);
+                _textureBufferSeamFix = new RenderTarget2D(_graphicsDevice, GameSettings.g_texResolution,
+                    GameSettings.g_texResolution, true, SurfaceFormat.Color, DepthFormat.None);
+                Shaders.SeamFixBaseTexture.SetValue(_textureBuffer);
+                Shaders.SeamFixInverseResolution.SetValue(1.0f / GameSettings.g_texResolution);
+            }
+            else
+            {
+                _textureBuffer = new RenderTarget2D(_graphicsDevice, GameSettings.g_texResolution,
+                    GameSettings.g_texResolution, true, SurfaceFormat.Color, DepthFormat.None);
+            }
         }
 
         private void UpdateRenderMapBindings(bool onlyEssentials)
@@ -440,8 +472,8 @@ namespace EngineTest.Renderer
                 height = (int) (scale * height);
             }
             _graphicsDevice.SetRenderTarget(null);
-            _spriteBatch.Begin(0, blendState, _supersampling>1 ? SamplerState.LinearWrap : SamplerState.PointClamp);
-            _spriteBatch.Draw(map, new Rectangle(0, 0, width, height), Color.White);
+            _spriteBatch.Begin(0, blendState, SamplerState.PointClamp);
+            _spriteBatch.Draw(map, new Rectangle(0, GameSettings.g_ScreenHeight - height, width, height), Color.White);
             _spriteBatch.End();
         }
         

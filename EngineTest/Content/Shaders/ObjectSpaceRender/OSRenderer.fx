@@ -40,7 +40,7 @@ Texture2D<float4> Mask;
 float lightIntensity = 7;
 float3 lightColor = float3(1, 1, 0.9f);
 
-float EnvironmentIntensity = 0.1f;
+float EnvironmentIntensity = 1.8f;
 Texture2D EnvironmentMap;
 SamplerState EnvironmentMapSampler
 {
@@ -200,7 +200,7 @@ float4 DrawBasicMesh_PixelShader(DrawBasicMesh_VS input) : COLOR
 float4 Lighting(Render_IN input)
 {
 	float3 normal = input.Normal;
-	float4 color = pow(abs(input.Color), 1);
+	float4 color = pow(abs(input.Color), 2.2f);
 	float metalness = input.Metallic;
 	float roughness = input.Roughness;
 
@@ -227,22 +227,23 @@ float4 Lighting(Render_IN input)
 	float4 ambientDiffuse = float4(EnvironmentMap.Load(int3(127, envMapCoord * 128, 0), int2(0, 0)).rgb, 1); //EnvironmentMap.Sample(EnvironmentMapSampler, float2(1.0f, envMapCoord)); EnvironmentMap.Load(int3(1, envMapCoord * 128, 0), int2(0, 0)); // EnvironmentMap.SampleLevel(EnvironmentMapSampler, float2(-1, envMapCoord), 0)*10;
 	float4 ambientSpecular = EnvironmentMap.Load(int3(input.Roughness * 128, envMapCoord * 128, 0), int2(0, 0)); //EnvironmentMap.Load(int3(0, envMapCoord * 128, 0), int2(0, 0));
 
+	ambientDiffuse = pow(abs(ambientDiffuse), 2.2f) * EnvironmentIntensity;
+	ambientSpecular = pow(abs(ambientSpecular), 4.4f) * EnvironmentIntensity;
+
 	float strength = lerp(ambientSpecular.a * 2, 1, metalness);
 
 	ambientSpecular = float4(ambientSpecular.rgb *strength, 1);
 
-	ambientDiffuse = pow(abs(ambientDiffuse), 1) * EnvironmentIntensity;
-	ambientSpecular = pow(abs(ambientSpecular), 1) * EnvironmentIntensity;
 
 
-	float3 plasticFinal = color * (diffuseLight+ambientDiffuse)+specularLight + ambientSpecular;
+	float3 plasticFinal = color * (diffuseLight + ambientDiffuse) + specularLight; //ambientSpecular;
 
 	float3 metalFinal = (specularLight+ambientSpecular) * color.rgb;
 
 	float3 finalValue = lerp(plasticFinal, metalFinal, metalness);
 
 
-	return float4(pow(abs(finalValue), 1), 0);
+	return float4(pow(abs(finalValue), 1/2.2f), 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

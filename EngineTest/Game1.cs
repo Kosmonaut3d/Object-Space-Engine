@@ -1,7 +1,12 @@
-﻿using System;
+﻿#undef USE_GEARSET
+
+using System;
 using BEPUphysics;
+using EngineTest.Gearset;
 using EngineTest.Main;
 using EngineTest.Recources;
+using Gearset;
+using Gearset.Components.Profiler;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -22,7 +27,7 @@ namespace EngineTest
         private bool _isActive = true;
 
         private readonly Space _physicsSpace;
-
+        
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //  FUNCTIONS
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +48,7 @@ namespace EngineTest
             };
 
             //Set up graphics properties, no vsync, no framelock
-            _graphics.SynchronizeWithVerticalRetrace = false;
+            _graphics.SynchronizeWithVerticalRetrace = true;
             IsFixedTimeStep = false;
             //TargetElapsedTime = TimeSpan.FromMilliseconds(100);
 
@@ -77,12 +82,12 @@ namespace EngineTest
 
         private void IsActivated(object sender, EventArgs e)
         {
-            _isActive = true;
+            //_isActive = true;
         }
 
         private void IsDeactivated(object sender, EventArgs e)
         {
-            _isActive = false;
+            //_isActive = false;
         }
 
         /// <summary>
@@ -118,6 +123,12 @@ namespace EngineTest
             _screenManager.Initialize(GraphicsDevice, _physicsSpace);
 
             GraphicsDevice.PresentationParameters.MultiSampleCount = 4;
+
+            //Initialise Gearset in 'headless' mode with no 'external' UI - (overlays are still available).
+            //We want to monitor managed memory allocations from our app and the UIs generate a fair amount of garbage which would distort the profiling.
+            GS.Initialize(this, createUI: true);
+            
+            GS.Action(() => GS.GearsetComponent.Console.Inspect("Profiler", new ProfilerInpectorSettings(GS.GearsetComponent.Console.Profiler)));
 
             base.Initialize();
         }
@@ -156,7 +167,23 @@ namespace EngineTest
             if(GameSettings.p_Physics)
                 _physicsSpace.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
-            //base.Update(gameTime);
+            base.Update(gameTime);
+
+            const string mark = "Update";
+
+
+            GS.StartFrame();
+            GS.BeginMark(mark, FlatTheme.PeterRiver);
+            //GS.Plot("FPS", (float) GameStats.fps_avg, 100);
+
+#if USE_GEARSET
+            if (GS.GearsetComponent.Console.Profiler.DoUpdate() == false)
+            {
+                return;
+            }
+#endif
+
+            GS.EndMark(mark);
         }
 
         /// <summary>
@@ -168,8 +195,14 @@ namespace EngineTest
             //Don't draw when the game is not running
             if (!_isActive) return;
 
+            GS.BeginMark("Draw", FlatTheme.Pomegrantate);
+
             _screenManager.Draw(gameTime);
-            //base.Draw(gameTime);
+
+
+            base.Draw(gameTime);
+            GS.EndMark("Draw");
+
         }
     }
 }

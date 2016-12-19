@@ -21,6 +21,7 @@ namespace EngineTest.Main
         private EditorLogic _editorLogic;
         private Assets _assets;
         private DebugScreen _debug;
+        private UILogic _uiLogic;
 
         private EditorLogic.EditorReceivedData _editorReceivedDataBuffer;
         
@@ -34,6 +35,7 @@ namespace EngineTest.Main
             _logic.Initialize(_assets, space);
             _editorLogic.Initialize(graphicsDevice);
             _debug.Initialize(graphicsDevice);
+            _uiLogic.Initialize(graphicsDevice);
         }
 
         //Update per frame
@@ -44,6 +46,7 @@ namespace EngineTest.Main
             _renderer.Update(gameTime, isActive);
 
             _debug.Update(gameTime);
+            _uiLogic.Update(gameTime);
         }
 
         //Load content
@@ -54,12 +57,14 @@ namespace EngineTest.Main
             _editorLogic = new EditorLogic();
             _assets = new Assets();
             _debug = new DebugScreen();
+            _uiLogic = new UILogic();
 
             Shaders.Load(content);
             _assets.Load(content, graphicsDevice);
             _renderer.Load(content);
             _logic.Load(content);
             _debug.LoadContent(content);
+            _uiLogic.Load(content);
         }
 
         public void Unload(ContentManager content)
@@ -72,6 +77,7 @@ namespace EngineTest.Main
             //Our renderer gives us information on what id is currently hovered over so we can update / manipulate objects in the logic functions
             _renderer.Draw(_logic.Camera, _logic.MeshMaterialLibrary, _logic.BasicEntities, _logic.PointLights, _logic.DirectionalLights, _editorLogic.GetEditorData(), gameTime);
             _debug.Draw(gameTime);
+            _uiLogic.Draw(gameTime);
         }
 
         public void UpdateResolution()

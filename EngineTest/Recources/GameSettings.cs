@@ -30,6 +30,50 @@ namespace EngineTest.Recources
         public static bool d_defaultMaterial;
         // Screen Space Ambient Occlusion
         public static bool c_UseStringBuilder = true;
+        public static bool g_UpdateShading = true;
+        public static bool u_updateUI = true;
+        public static int g_texResolution = 512;
+
+        public static bool g_FixSeams = true;
+
+        public static bool s_rotateModel = true;
+
+        private static float _g_EnvironmentIntensity = 1.8f;
+
+        public static float g_EnvironmentIntensity
+        {
+            get
+            {
+                return _g_EnvironmentIntensity;
+            }
+
+            set
+            {
+                if (Math.Abs(_g_EnvironmentIntensity - value) > 0.0001f)
+                {
+                    _g_EnvironmentIntensity = value;
+                    Shaders.GBufferEffectParameter_EnvironmentIntensity.SetValue(value);
+                }
+            }
+        }
+
+        private static int _g_SeamSearchSteps;
+        public static int g_SeamSearchSteps
+        {
+            get
+            {
+                return _g_SeamSearchSteps;
+            }
+
+            set
+            {
+                if (_g_SeamSearchSteps!=value)
+                {
+                    _g_SeamSearchSteps = value;
+                    Shaders.SeamFixSteps.SetValue((float)_g_SeamSearchSteps);
+                }
+            }
+        }
 
         public static void ApplySettings()
         {

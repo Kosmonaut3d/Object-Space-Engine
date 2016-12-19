@@ -10,6 +10,8 @@
         public static int activeShadowMaps = 0;
         public static int EmissiveMeshDraws = 0;
 
+        public static double fps_avg = 0;
+
         public static long d_profileRenderChanges;
         public static long d_profileDrawShadows;
         public static long d_profileDrawCubeMap;

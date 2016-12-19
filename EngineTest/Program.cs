@@ -16,6 +16,8 @@ namespace EngineTest
         {
             using (var game = new Game1())
                 game.Run();
+
+            Environment.Exit(0);
         }
     }
 #endif
