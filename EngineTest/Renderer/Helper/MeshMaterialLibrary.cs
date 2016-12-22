@@ -294,7 +294,8 @@ namespace EngineTest.Renderer.Helper
         public enum RenderType
         {
             TextureBuffer, 
-            FinalMesh
+            FinalMesh,
+            Skybox
         }
 
         public void Draw(RenderType renderType, GraphicsDevice graphicsDevice, Matrix viewProjection, bool lightViewPointChanged = false, bool hasAnyObjectMoved = false, bool outlined = false, int outlineId = 0, Matrix? view = null)
@@ -576,6 +577,15 @@ namespace EngineTest.Renderer.Helper
                             Shaders.GBufferEffectParameter_WorldViewProj.SetValue(localWorldMatrix * viewProjection);
                             
                             Shaders.GBufferEffectTechniques_DrawBasicMesh.Passes[0].Apply();
+                        }
+                        else if (renderType == RenderType.Skybox)
+                        {
+                            Shaders.GBufferEffectParameter_WorldViewProj.SetValue(localWorldMatrix * viewProjection);
+
+                            Matrix world = localWorldMatrix;
+                            Shaders.GBufferEffectParameter_WorldIT.SetValue(world);
+
+                            Shaders.GBufferEffectTechniques_DrawSkybox.Passes[0].Apply();
                         }
 
                         if (material.RenderCClockwise)
