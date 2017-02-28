@@ -3182,3 +3182,9 @@
 /processorParam:TextureFormat=Compressed
 /build:Art/isosphere.fbx
 
+#begin Shaders/GBufferSetup/ClearGBuffer.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/GBufferSetup/ClearGBuffer.fx
+

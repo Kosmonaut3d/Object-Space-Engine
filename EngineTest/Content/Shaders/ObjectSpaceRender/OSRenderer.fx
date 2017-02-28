@@ -147,6 +147,16 @@ DrawBasicMesh_VS DrawBasicMesh_VertexShader(DrawBasicMesh_VS input)
 	return Output;
 }
 
+DrawBasic_VSIn DrawSkybox_VertexShader(DrawBasic_VSIn input)
+{
+	DrawBasic_VSIn Output;
+	//input.Position.z *= input.Position.z+0.5f;
+	Output.Position = mul(input.Position, WorldViewProj);
+	Output.Normal = mul(input.Normal, WorldViewIT);
+	Output.TexCoord = input.TexCoord;
+	return Output;
+}
+
  //  DEFAULT LIGHT SHADER FOR MODELS
 DrawBasic_VSOut DrawBasic_VertexShader(DrawBasic_VSIn input)
 {
@@ -195,6 +205,16 @@ float3 GetNormalMap(float2 TexCoord)
 float4 DrawBasicMesh_PixelShader(DrawBasicMesh_VS input) : COLOR
 {
 	return Texture.Sample(TextureSamplerTrilinear, input.TexCoord);
+}
+
+float4 DrawSkybox_PixelShader(DrawBasic_VSIn input) : COLOR
+{
+	float3 normal = normalize(input.Normal);
+	float envMapCoord = 1 - saturate((normal.z + 1) / 2);
+	float4 ambientSpecular = EnvironmentMap.SampleLevel(TextureSamplerTrilinear, float2(0, envMapCoord * 0.98f + 0.01f),0);
+	ambientSpecular = pow(abs(ambientSpecular), 4.4f) * EnvironmentIntensity;
+
+	return float4(pow(abs(ambientSpecular), 1 / 2.2f));
 }
 
 float4 Lighting(Render_IN input)

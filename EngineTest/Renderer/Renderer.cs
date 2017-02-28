@@ -358,7 +358,27 @@ namespace EngineTest.Renderer
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             Shaders.GBufferEffectParameter_Material_Texture.SetValue(GameSettings.g_FixSeams ? _textureBufferSeamFix : _textureBuffer);
             meshMaterialLibrary.Draw(renderType: MeshMaterialLibrary.RenderType.FinalMesh, graphicsDevice: _graphicsDevice, viewProjection: _viewProjection, lightViewPointChanged: true, view: _view);
-            
+
+            _graphicsDevice.RasterizerState = RasterizerState.CullClockwise;
+            _graphicsDevice.BlendState = BlendState.NonPremultiplied;
+            //Skybox
+            ModelMeshPart part = _assets.Isosphere.Meshes[0].MeshParts[0];
+            _graphicsDevice.SetVertexBuffer(part.VertexBuffer);
+            _graphicsDevice.Indices = (part.IndexBuffer);
+            int primitiveCount = part.PrimitiveCount;
+            int vertexOffset = part.VertexOffset;
+            //int vCount = meshLib.GetMesh().NumVertices;
+            int startIndex = part.StartIndex;
+
+            Matrix world = Matrix.CreateScale(100);
+
+            Shaders.GBufferEffectParameter_WorldViewProj.SetValue(world * _viewProjection);
+
+            Shaders.GBufferEffectParameter_WorldIT.SetValue(world);
+
+            Shaders.GBufferEffectTechniques_DrawSkybox.Passes[0].Apply();
+            _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, vertexOffset, startIndex, primitiveCount);
+
             //Performance Profiler
             if (GameSettings.d_profiler)
             {

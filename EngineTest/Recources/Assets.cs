@@ -11,11 +11,13 @@ namespace EngineTest.Recources
         public static Texture2D BaseTex;
 
         public Model Truck;
+        public Model Isosphere;
 
         public MaterialEffect TruckMaterial;
         public MaterialEffect TruckMaterial2;
         public MaterialEffect GoldMaterial;
         public Texture2D EnvironmentMap;
+
         public bool IconLight { get; set; }
 
 
@@ -25,6 +27,7 @@ namespace EngineTest.Recources
             BaseTex.SetData(new Color[] { Color.White });
 
             Truck = content.Load<Model>("Art/truck_skeleton");
+            Isosphere = content.Load<Model>("Art/isosphere");
             EnvironmentMap = content.Load<Texture2D>("Art/1900");
             TruckMaterial = CreateMaterial(Color.Wheat, 0.1f, 0.1f,
                 albedoMap: content.Load<Texture2D>("Art/truck_skeleton_albedo"),
