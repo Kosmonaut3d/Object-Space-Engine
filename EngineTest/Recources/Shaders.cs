@@ -5,6 +5,10 @@ namespace EngineTest.Recources
 {
     public static class Shaders
     {
+        //Test
+
+        public static Effect NormalMappingEffect;
+
         //Id Generator
         public static Effect IdRenderEffect;
         public static EffectParameter IdRenderEffectParameterWorld;
@@ -117,6 +121,8 @@ namespace EngineTest.Recources
 
         public static void Load(ContentManager content)
         {
+            NormalMappingEffect = content.Load<Effect>("Shaders/ObjectSpaceRender/NormalMapping");
+
             //SeamFix
             SeamFixEffect = content.Load<Effect>("Shaders/ObjectSpaceRender/SeamFix");
             SeamFixBaseTexture = SeamFixEffect.Parameters["BaseTexture"];
