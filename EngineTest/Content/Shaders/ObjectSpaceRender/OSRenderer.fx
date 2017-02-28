@@ -76,8 +76,8 @@ sampler TextureSamplerTrilinear
 	MagFilter = LINEAR;
 	MinFilter = LINEAR;
 	Mipfilter = LINEAR;
-	AddressU = Clamp;
-	AddressV = Clamp;
+	AddressU = Wrap;
+	AddressV = Wrap;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,18 +142,7 @@ struct Render_IN
 DrawBasicMesh_VS DrawBasicMesh_VertexShader(DrawBasicMesh_VS input)
 {
 	DrawBasicMesh_VS Output;
-	//input.Position.z *= input.Position.z+0.5f;
 	Output.Position = mul(input.Position, WorldViewProj);
-	Output.TexCoord = input.TexCoord;
-	return Output;
-}
-
-DrawBasic_VSIn DrawSkybox_VertexShader(DrawBasic_VSIn input)
-{
-	DrawBasic_VSIn Output;
-	//input.Position.z *= input.Position.z+0.5f;
-	Output.Position = mul(input.Position, WorldViewProj);
-	Output.Normal = mul(input.Normal, WorldViewIT);
 	Output.TexCoord = input.TexCoord;
 	return Output;
 }
@@ -162,7 +151,9 @@ DrawBasic_VSIn DrawSkybox_VertexShader(DrawBasic_VSIn input)
 DrawBasic_VSOut DrawBasic_VertexShader(DrawBasic_VSIn input)
 {
     DrawBasic_VSOut Output;
-	Output.Position = float4(input.TexCoord.x * 2.0f - 1.0f, -(input.TexCoord.y * 2.0f - 1.0f), 0, 0);
+	Output.Position = float4(0, 0, 0, 1);
+	Output.Position.x = input.TexCoord.x * 2.0f - 1.0f;
+	Output.Position.y = -(input.TexCoord.y * 2.0f - 1.0f);
 	float4(input.TexCoord, 0, 1); // mul(input.Position, WorldViewProj);
 	Output.Normal = mul(input.Normal, WorldViewIT);//mul(float4(input.Normal, 0), World).xyz;
     Output.TexCoord = input.TexCoord;
@@ -204,16 +195,6 @@ float3 GetNormalMap(float2 TexCoord)
 float4 DrawBasicMesh_PixelShader(DrawBasicMesh_VS input) : COLOR
 {
 	return Texture.Sample(TextureSamplerTrilinear, input.TexCoord);
-}
-
-float4 DrawSkybox_PixelShader(DrawBasic_VSIn input) : COLOR
-{ 
-	float3 normal = normalize(input.Normal);
-	float envMapCoord = 1-saturate((normal.z  + 1) / 2);
-	float4 ambientSpecular = EnvironmentMap.SampleLevel(TextureSamplerTrilinear, float2(0, envMapCoord * 0.98f + 0.01f),0);
-	ambientSpecular = pow(abs(ambientSpecular), 4.4f) * EnvironmentIntensity;
-
-	return float4(pow(abs(ambientSpecular), 1 / 2.2f));
 }
 
 float4 Lighting(Render_IN input)
@@ -595,7 +576,6 @@ technique DrawTextureSpecularNormal
     }
 }
 
-//used
 technique DrawTextureSpecularNormalMetallic
 {
     pass Pass1

@@ -11,7 +11,6 @@ namespace EngineTest.Recources
         public static Texture2D BaseTex;
 
         public Model Truck;
-        public Model IsoSphere;
 
         public MaterialEffect TruckMaterial;
         public MaterialEffect TruckMaterial2;
@@ -25,7 +24,6 @@ namespace EngineTest.Recources
             BaseTex = new Texture2D(graphicsDevice, 1, 1);
             BaseTex.SetData(new Color[] { Color.White });
 
-            IsoSphere = content.Load<Model>("Art/Isosphere");
             Truck = content.Load<Model>("Art/truck_skeleton");
             EnvironmentMap = content.Load<Texture2D>("Art/1900");
             TruckMaterial = CreateMaterial(Color.Wheat, 0.1f, 0.1f,

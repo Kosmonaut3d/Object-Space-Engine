@@ -17,7 +17,7 @@ namespace EngineTest.Recources
 
         public static bool g_CPU_Sort = true;
         public static int g_ScreenWidth = 1280;
-        public static int g_ScreenHeight = 720;
+        public static int g_ScreenHeight = 800;
         
         public static bool p_Physics = false;
 

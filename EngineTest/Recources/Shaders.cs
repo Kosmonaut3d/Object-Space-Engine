@@ -102,7 +102,6 @@ namespace EngineTest.Recources
         public static EffectTechnique GBufferEffectTechniques_DrawTexture;
         public static EffectTechnique GBufferEffectTechniques_DrawBasic;
         public static EffectTechnique GBufferEffectTechniques_DrawBasicMesh;
-        public static EffectTechnique GBufferEffectTechniques_DrawSkybox;
 
         //SEAMFIX
 
@@ -171,7 +170,7 @@ namespace EngineTest.Recources
             GBufferEffectTechniques_DrawTexture = GBufferEffect.Techniques["DrawTexture"];
             GBufferEffectTechniques_DrawBasic = GBufferEffect.Techniques["DrawBasic"];
             GBufferEffectTechniques_DrawBasicMesh = GBufferEffect.Techniques["DrawBasicMesh"];
-            GBufferEffectTechniques_DrawSkybox = GBufferEffect.Techniques["DrawSkybox"];
+
             //VSM
 
             //virtualShadowMappingEffect = content.Load<Effect>("Shaders/Shadow/VirtualShadowMapsGenerate");
