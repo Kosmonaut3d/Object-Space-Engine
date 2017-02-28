@@ -29,8 +29,6 @@ namespace EngineTest.Recources
             TruckMaterial = CreateMaterial(Color.Wheat, 0.1f, 0.1f,
                 albedoMap: content.Load<Texture2D>("Art/truck_skeleton_albedo"),
                 normalMap: content.Load<Texture2D>("Art/truck_skeleton_normal"),
-                //albedoMap: content.Load<Texture2D>("Art/squarebricks-Diffuse"),
-                //normalMap: content.Load<Texture2D>("Art/squarebricks-normal"),
                 roughnessMap: content.Load<Texture2D>("Art/truck_skeleton_roughness"),
                 metallicMap: content.Load<Texture2D>("Art/truck_skeleton_metallic")
                 );

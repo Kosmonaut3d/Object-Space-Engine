@@ -36,7 +36,7 @@ namespace EngineTest.Recources
 
         public static bool g_FixSeams = true;
 
-        public static bool s_rotateModel = false;
+        public static bool s_rotateModel = true;
 
         private static float _g_EnvironmentIntensity = 1.8f;
 
@@ -58,9 +58,6 @@ namespace EngineTest.Recources
         }
 
         private static int _g_SeamSearchSteps;
-        public static double g_Angle;
-        public static int g_MSAASamples = 4;
-
         public static int g_SeamSearchSteps
         {
             get

@@ -531,6 +531,15 @@ technique DrawBasicMesh
 	}
 }
 
+technique DrawSkybox
+{
+	pass Pass1
+	{
+		VertexShader = compile vs_4_0 DrawSkybox_VertexShader();
+		PixelShader = compile ps_5_0 DrawSkybox_PixelShader();
+	}
+}
+
 technique DrawBasic
 {
     pass Pass1

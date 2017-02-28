@@ -112,33 +112,6 @@ namespace EngineTest.Main
                 seamFixStepsSlider.Disabled = !cb.Checked;
             };
 
-            Paragraph msaaSamples = new Paragraph("MSAA Samples: 4");
-            panel.AddChild(msaaSamples);
-
-            Slider msaaSamplesSlider = new Slider(0, 3, SliderSkin.Default);
-            msaaSamplesSlider.StepsCount = 4;
-            msaaSamplesSlider.Value = 2;
-            msaaSamplesSlider.OnValueChange = (Entity entity) =>
-            {
-                Slider slid = (Slider)entity;
-                GameSettings.g_MSAASamples = (int) Math.Pow(2, slid.Value);
-                msaaSamples.Text = "MSAA Samples: " + GameSettings.g_MSAASamples;
-            };
-            panel.AddChild(msaaSamplesSlider);
-
-           
-
-
-            //Slider lightSlider = new Slider(0, 2000, SliderSkin.Default);
-            //lightSlider.StepsCount = 2000;
-            //lightSlider.Value = 0;
-            //lightSlider.OnValueChange = (Entity entity) =>
-            //{
-            //    Slider slid = (Slider)entity;
-            //    GameSettings.g_Angle = slid.Value / 200.0f;
-            //};
-            //panel.AddChild(lightSlider);
-
         }
 
         public void Load(ContentManager content)

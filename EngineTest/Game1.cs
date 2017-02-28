@@ -48,7 +48,7 @@ namespace EngineTest
             };
 
             //Set up graphics properties, no vsync, no framelock
-            _graphics.SynchronizeWithVerticalRetrace = false;
+            _graphics.SynchronizeWithVerticalRetrace = true;
             IsFixedTimeStep = false;
             //TargetElapsedTime = TimeSpan.FromMilliseconds(100);
 
@@ -56,15 +56,12 @@ namespace EngineTest
             _graphics.PreferredBackBufferWidth = GameSettings.g_ScreenWidth;
             _graphics.PreferredBackBufferHeight = GameSettings.g_ScreenHeight;
 
-            
-            _graphics.PreferMultiSampling = false;
+            _graphics.PreferMultiSampling = true;
             _graphics.PreferredBackBufferFormat = SurfaceFormat.Color;
 
             _graphics.PreferredDepthStencilFormat = DepthFormat.Depth24;
             //HiDef enables usable shaders
             _graphics.GraphicsProfile = GraphicsProfile.HiDef;
-
-            _graphics.ApplyChanges();
 
             //_graphics.GraphicsDevice.DeviceLost += new EventHandler<EventArgs>(ClientLostDevice);
 
@@ -125,9 +122,8 @@ namespace EngineTest
             // TODO: Add your initialization logic here
             _screenManager.Initialize(GraphicsDevice, _physicsSpace);
 
-            GraphicsDevice.PresentationParameters.MultiSampleCount = 8;
-            _graphics.ApplyChanges();
-            
+            GraphicsDevice.PresentationParameters.MultiSampleCount = 4;
+
             //Initialise Gearset in 'headless' mode with no 'external' UI - (overlays are still available).
             //We want to monitor managed memory allocations from our app and the UIs generate a fair amount of garbage which would distort the profiling.
             GS.Initialize(this, createUI: true);

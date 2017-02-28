@@ -133,11 +133,9 @@
     <Reference Include="Gearset.MonoGame">
       <HintPath>..\..\Gearset-master\Gearset\bin\Debug\Gearset.MonoGame.WindowsDX\Gearset.MonoGame.dll</HintPath>
     </Reference>
-    <Reference Include="MonoGame.Framework, Version=3.6.0.1186, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Monogame\MonoGame.Framework\bin\Windows\AnyCPU\Debug\MonoGame.Framework.dll</HintPath>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>

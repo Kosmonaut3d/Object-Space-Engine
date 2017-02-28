@@ -67,7 +67,6 @@ namespace EngineTest.Renderer
         private bool _ssr = true;
         private bool _g_SSReflectionNoise;
         private bool _g_UseDepthStencilLightCulling;
-        private int _g_msaaSamples;
 
         //Render modes
         public enum RenderModes { Final
@@ -80,8 +79,6 @@ namespace EngineTest.Renderer
 
         private readonly Stopwatch _performanceTimer = new Stopwatch();
         private long _performancePreviousTime;
-        private RenderTarget2D _renderTarget;
-        private RenderTarget2D _resolvedRenderTarget;
 
         #endregion
 
@@ -118,7 +115,7 @@ namespace EngineTest.Renderer
             _quadRenderer = new QuadRenderer();
             _spriteBatch = new SpriteBatch(graphicsDevice);
             _assets = assets;
-            
+
             //Apply some base settings to overwrite shader defaults with game settings defaults
             GameSettings.ApplySettings();
 
@@ -165,8 +162,8 @@ namespace EngineTest.Renderer
         {
             //Reset the stat counter, so we can count stats/information for this frame only
             ResetStats();
-
-           // Update the mesh data for changes in physics etc.
+            
+            //Update the mesh data for changes in physics etc.
             meshMaterialLibrary.FrustumCullingStartFrame(entities);
 
             //Check if we changed some drastic stuff for which we need to reload some elements
@@ -177,11 +174,11 @@ namespace EngineTest.Renderer
 
             //Update our view projection matrices if the camera moved
             UpdateViewProjection(camera, meshMaterialLibrary, entities);
-
+            
             GS.BeginMark("DrawTextureBuffer", Color.Red);
             //Draw our meshes to the G Buffer
             DrawTextureBuffer(meshMaterialLibrary);
-
+            
             GS.EndMark("DrawTextureBuffer");
 
             FixSeams();
@@ -191,9 +188,7 @@ namespace EngineTest.Renderer
             GS.EndMark("DrawMeshes");
             //Draw the final rendered image, change the output based on user input to show individual buffers/rendertargets
             RenderMode();
-
-            //TestNormalMap();
-
+            
             //Draw (debug) lines
             LineHelperManager.Draw(_graphicsDevice, _staticViewProjection);
 
@@ -201,34 +196,6 @@ namespace EngineTest.Renderer
             meshMaterialLibrary.FrustumCullingFinalizeFrame(entities);
         }
 
-        private void TestNormalMap()
-        {
-            Vector2 dir = new Vector2((float) Math.Sin(GameSettings.g_Angle), (float) Math.Cos(GameSettings.g_Angle));
-            dir.Normalize();
-            Vector3 lightDirection = new Vector3(dir.X, dir.Y, 0.05f);
-            lightDirection.Normalize();
-
-            //Clear the device to XNA blue.
-            _graphicsDevice.Clear(Color.CornflowerBlue);
-            _graphicsDevice.BlendState = BlendState.Opaque;
-            // Draw without shader
-            //_spriteBatch.Begin();
-            //_spriteBatch.Draw(_assets.TruckMaterial.NormalMap, new Vector2(0, 0), Color.White);
-            //_spriteBatch.End();
-
-            //Set the light directions.
-            Shaders.NormalMappingEffect.Parameters["LightDirection"].SetValue(lightDirection);
-            Shaders.NormalMappingEffect.Parameters["NormalTexture"].SetValue(_assets.TruckMaterial.NormalMap);
-            //Shaders.NormalMappingEffect.Parameters["ScreenTexture"].SetValue(_assets.TruckMaterial.NormalMap);
-            Shaders.NormalMappingEffect.Parameters["LightColor"].SetValue(new Vector3(1f, 1f, 1f));
-            Shaders.NormalMappingEffect.Parameters["AmbientColor"].SetValue(new Vector3(.25f, 0.25f, 0.25f));
-
-            Shaders.NormalMappingEffect.CurrentTechnique.Passes[0].Apply();
-
-            _spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, Shaders.NormalMappingEffect);
-            _spriteBatch.Draw(_assets.TruckMaterial.AlbedoMap, new Rectangle(0, 0, 400,400), Color.White);
-            _spriteBatch.End();
-        }
 
         #endregion
 
@@ -272,13 +239,7 @@ namespace EngineTest.Renderer
                 _g_FarClip = GameSettings.g_FarPlane;
                 Shaders.GBufferEffectParameter_FarClip.SetValue(_g_FarClip);
             }
-
-            if (_g_msaaSamples != GameSettings.g_MSAASamples)
-            {
-                _g_msaaSamples = GameSettings.g_MSAASamples;
-                UpdateResolution();
-            }
-
+            
             //Check if supersampling has changed
             if (_texResolution != GameSettings.g_texResolution)
             {
@@ -391,7 +352,7 @@ namespace EngineTest.Renderer
 
         private void DrawObjects(MeshMaterialLibrary meshMaterialLibrary)
         {
-            _graphicsDevice.SetRenderTarget(_renderTarget);
+            _graphicsDevice.SetRenderTarget(null);
             _graphicsDevice.Clear(GameSettings.g_UpdateShading ? Color.CadetBlue : Color.DarkViolet);
             _graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
@@ -419,16 +380,6 @@ namespace EngineTest.Renderer
             //    default:
 
             //}
-            if (_renderTarget.MultiSampleCount > 1)
-            {
-                _renderTarget.ResolveSubresource(_resolvedRenderTarget);
-
-                DrawMapToScreenToFullScreen(_resolvedRenderTarget);
-            }
-            else
-            {
-                DrawMapToScreenToFullScreen(_renderTarget);
-            }
 
             DrawMapToScreenToFullScreen(GameSettings.g_FixSeams ? _textureBufferSeamFix : _textureBuffer, null, 0.4f);
 
@@ -457,28 +408,6 @@ namespace EngineTest.Renderer
         {
             _inverseResolution = new Vector3(1.0f / GameSettings.g_ScreenWidth, 1.0f / GameSettings.g_ScreenHeight, 0);
 
-            int scale = 1;
-
-            _renderTarget = new RenderTarget2D(graphicsDevice: _graphicsDevice, 
-                width: GameSettings.g_ScreenWidth / scale, 
-                height: GameSettings.g_ScreenHeight / scale,
-                mipMap: false,
-                preferredFormat: SurfaceFormat.Color,
-                preferredDepthFormat: DepthFormat.Depth24,
-                preferredMultiSampleCount: GameSettings.g_MSAASamples,
-                usage: RenderTargetUsage.DiscardContents
-                );
-
-            _resolvedRenderTarget = new RenderTarget2D(graphicsDevice: _graphicsDevice,
-                width: GameSettings.g_ScreenWidth / scale,
-                height: GameSettings.g_ScreenHeight / scale,
-                mipMap: false,
-                preferredFormat: SurfaceFormat.Color,
-                preferredDepthFormat: DepthFormat.None,
-                preferredMultiSampleCount: 0,
-                usage: RenderTargetUsage.DiscardContents
-                );
-
             //SetUpRenderTargets(GameSettings.g_ScreenWidth, GameSettings.g_ScreenHeight, false);
         }
 
@@ -487,7 +416,7 @@ namespace EngineTest.Renderer
             if (GameSettings.g_FixSeams)
             {
                 _textureBuffer = new RenderTarget2D(_graphicsDevice, GameSettings.g_texResolution,
-                    GameSettings.g_texResolution, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
+                    GameSettings.g_texResolution, false, SurfaceFormat.Color, DepthFormat.None);
                 _textureBufferSeamFix = new RenderTarget2D(_graphicsDevice, GameSettings.g_texResolution,
                     GameSettings.g_texResolution, true, SurfaceFormat.Color, DepthFormat.None);
                 Shaders.SeamFixBaseTexture.SetValue(_textureBuffer);
